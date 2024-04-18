@@ -105,18 +105,107 @@ pub fn solutionD2P2(input: []u8) i32 {
     return total;
 }
 
-pub fn solutionD3P1(input: []u8) i32 {
-    var floor: i32 = 0;
-    var pos: i32 = 0;
+pub fn solutionD3P1(input: []u8) !i32 {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var history = std.AutoHashMap([2]i32, bool).init(allocator);
+    defer history.deinit();
+    var posX: i32 = 0;
+    var posY: i32 = 0;
+
+    try history.put([_]i32{ posX, posY }, true);
+    var visitedHouses: i32 = 1;
+
     for (input) |char| {
-        pos += 1;
-        if (char == '(') {
-            floor += 1;
-        } else {
-            floor -= 1;
+        if (char == '^') {
+            posY += 1;
+        } else if (char == '>') {
+            posX += 1;
+        } else if (char == 'v') {
+            posY -= 1;
+        } else if (char == '<') {
+            posX -= 1;
         }
-        if (floor == -1) break;
+
+        const key = [_]i32{ posX, posY };
+        const exists = history.contains(key);
+        if (!exists) {
+            visitedHouses += 1;
+        }
+
+        try history.put(key, true);
     }
 
-    return pos;
+    return visitedHouses;
+}
+
+pub fn solutionD3P2(input: []u8) !i32 {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var historySanta = std.AutoHashMap([2]i32, bool).init(allocator);
+    defer historySanta.deinit();
+    var santaX: i32 = 0;
+    var santaY: i32 = 0;
+    try historySanta.put([_]i32{ santaX, santaY }, true);
+
+    var historyRobo = std.AutoHashMap([2]i32, bool).init(allocator);
+    defer historyRobo.deinit();
+    var roboX: i32 = 0;
+    var roboY: i32 = 0;
+    try historyRobo.put([_]i32{ roboX, roboY }, true);
+
+    var visitedHouses: i32 = 1;
+    var idx: i32 = 0;
+
+    for (input) |char| {
+        var command = [_]i32{ 0, 0 };
+        if (char == '^') {
+            command[1] += 1;
+        } else if (char == '>') {
+            command[0] += 1;
+        } else if (char == 'v') {
+            command[1] -= 1;
+        } else if (char == '<') {
+            command[0] -= 1;
+        }
+
+        const isSanta = @mod(idx, 2) == 0;
+        var key: [2]i32 = undefined;
+        if (isSanta) {
+            santaX += command[0];
+            santaY += command[1];
+            key = [_]i32{ santaX, santaY };
+        } else {
+            roboX += command[0];
+            roboY += command[1];
+            key = [_]i32{ roboX, roboY };
+        }
+
+        const exists = historySanta.contains(key) or historyRobo.contains(key);
+        if (!exists) visitedHouses += 1;
+
+        if (isSanta) try historySanta.put(key, true) else try historyRobo.put(key, true);
+
+        idx += 1;
+    }
+
+    return visitedHouses;
+}
+
+pub fn solutionD4P1(input: []u8) !i32 {
+    _ = input;
+    const sol: i32 = 0;
+
+    return sol;
+}
+
+pub fn solutionD5P1(input: []u8) !i32 {
+    _ = input;
+    const sol: i32 = 0;
+
+    return sol;
 }
