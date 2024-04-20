@@ -204,8 +204,107 @@ pub fn solutionD4P1(input: []u8) !i32 {
 }
 
 pub fn solutionD5P1(input: []u8) !i32 {
-    _ = input;
-    const sol: i32 = 0;
+    var niceStrings: i32 = 0;
 
-    return sol;
+    var linesIter = std.mem.split(u8, input, "\n");
+
+    while (linesIter.next()) |line| {
+        // to handle last empty string
+        if (line.len == 0) continue;
+
+        var prev: u8 = undefined;
+
+        var hasProhibited = false;
+        var vowelCount: i32 = 0;
+        var hasTwice = false;
+
+        for (line) |char| {
+            // prohibited check
+            if ((prev == 'a' and char == 'b') or
+                (prev == 'c' and char == 'd') or
+                (prev == 'p' and char == 'q') or
+                (prev == 'x' and char == 'y'))
+            {
+                hasProhibited = true;
+                break;
+            }
+
+            // vowel check
+            if (char == 'a' or char == 'e' or char == 'i' or char == 'o' or char == 'u') vowelCount += 1;
+
+            // twice check
+            if (!hasTwice and (prev == char)) hasTwice = true;
+
+            prev = char;
+        }
+
+        if (!hasProhibited and vowelCount > 2 and hasTwice) niceStrings += 1;
+    }
+
+    return niceStrings;
+}
+
+pub fn solutionD5P2(input: []u8) !i32 {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var niceStrings: i32 = 0;
+
+    // _ = input;
+    // const dummy =
+    //     \\qjhvhtzxzqqjkmpb
+    //     \\xxyxx
+    //     \\uurcxstgmygtbstg
+    //     \\ieodomkazucvgmuy
+    // ;
+    // var linesIter = std.mem.split(u8, dummy, "\n");
+    var linesIter = std.mem.split(u8, input, "\n");
+
+    while (linesIter.next()) |line| {
+        if (line.len == 0) continue;
+
+        var hasPairTwice = false;
+        var hasRepeatBetween = false;
+
+        for (line, 0..) |char, idx| {
+            // pairTwice check
+
+            // si llega al ultimo index y no encuentra, se acabo
+            if (idx == line.len - 1) break;
+
+            const base = line[idx .. idx + 2];
+
+            var lineWithoutBase = std.ArrayList(u8).init(allocator);
+            defer lineWithoutBase.deinit();
+
+            const right = line[idx + 2 .. line.len];
+            if (idx > 0) {
+                const left = line[0..idx];
+                for (left) |lc| try lineWithoutBase.append(lc);
+                for (right) |rc| try lineWithoutBase.append(rc);
+            } else {
+                for (right) |rc| try lineWithoutBase.append(rc);
+            }
+
+            for (lineWithoutBase.items, 0..) |c, j| {
+                if (j == lineWithoutBase.items.len - 1) break;
+                if (base[0] == c and base[1] == lineWithoutBase.items[j + 1]) {
+                    hasPairTwice = true;
+                    break;
+                }
+            }
+            lineWithoutBase.clearRetainingCapacity();
+
+            // repeatBetween check
+            if (!hasRepeatBetween and idx < line.len - 2) {
+                const next2 = line[idx + 2];
+                if (char == next2) hasRepeatBetween = true;
+            }
+        }
+
+        if (hasPairTwice and hasRepeatBetween) niceStrings += 1;
+    }
+
+    return niceStrings;
 }
