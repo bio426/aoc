@@ -10,6 +10,6 @@ tmux send-keys -t $session:$window 'cd ~/Desktop/aod && nvim .' C-m
 
 window=2
 tmux new-window -t $session:$window -n 'run'
-tmux send-keys -t $session:$window 'cd ~/Desktop/aoc && zig run src/main.zig' C-m
+tmux send-keys -t $session:$window 'cd ~/Desktop/aoc && go run main.go' C-m
 
 tmux attach-session -t $session
