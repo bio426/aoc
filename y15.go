@@ -231,60 +231,44 @@ func solutionD5P1(lines []string) (int32, error) {
 	return niceStrings, nil
 }
 
-// var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-// defer _ = gpa.deinit();
-// const allocator = gpa.allocator();
-//
-// var niceStrings: i32 = 0;
-//
-// var linesIter = std.mem.split(u8, input, "\n");
-//
-//	while (linesIter.next()) |line| {
-//	    if (line.len == 0) continue;
-//
-//	    var hasPairTwice = false;
-//	    var hasRepeatBetween = false;
-//
-//	    for (line, 0..) |char, idx| {
-//	        // pairTwice check
-//
-//	        // si llega al ultimo index y no encuentra, se acabo
-//	        if (idx == line.len - 1) break;
-//
-//	        const base = line[idx .. idx + 2];
-//
-//	        var lineWithoutBase = std.ArrayList(u8).init(allocator);
-//	        defer lineWithoutBase.deinit();
-//
-//	        const right = line[idx + 2 .. line.len];
-//	        if (idx > 0) {
-//	            const left = line[0..idx];
-//	            for (left) |lc| try lineWithoutBase.append(lc);
-//	            for (right) |rc| try lineWithoutBase.append(rc);
-//	        } else {
-//	            for (right) |rc| try lineWithoutBase.append(rc);
-//	        }
-//
-//	        for (lineWithoutBase.items, 0..) |c, j| {
-//	            if (j == lineWithoutBase.items.len - 1) break;
-//	            if (base[0] == c and base[1] == lineWithoutBase.items[j + 1]) {
-//	                hasPairTwice = true;
-//	                break;
-//	            }
-//	        }
-//	        lineWithoutBase.clearRetainingCapacity();
-//
-//	        // repeatBetween check
-//	        if (!hasRepeatBetween and idx < line.len - 2) {
-//	            const next2 = line[idx + 2];
-//	            if (char == next2) hasRepeatBetween = true;
-//	        }
-//	    }
-//
-//	    if (hasPairTwice and hasRepeatBetween) niceStrings += 1;
-//	}
-//
-// return niceStrings;
 func solutionD5P2(lines []string) (int32, error) {
-	return 0, nil
+
+	var niceStrings int32
+
+	for _, line := range lines {
+		hasPairTwice := false
+		hasRepeatedBetween := false
+
+		for idx, char := range line {
+			// pair check
+			if !hasPairTwice && idx < len(line)-2 {
+				base := line[idx : idx+2]
+				toCompare := line[idx+2:]
+				// check if base exist in compare
+				// el -1 esta para omitir el ultimo caracter porque no existriria el cIdx+1
+				for cIdx := 0; cIdx < len(toCompare)-1; cIdx++ {
+					match := toCompare[cIdx] == base[0] && toCompare[cIdx+1] == base[1]
+					if match {
+						hasPairTwice = true
+						break
+					}
+				}
+			}
+
+			// repeat check
+			if !hasRepeatedBetween && idx < len(line)-2 {
+				next2 := line[idx+2]
+				if char == rune(next2) {
+					hasRepeatedBetween = true
+				}
+			}
+
+		}
+
+		if hasPairTwice && hasRepeatedBetween {
+			niceStrings += 1
+		}
+
+	}
+	return niceStrings, nil
 }

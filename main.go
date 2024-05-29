@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 
-	result, err := solutionD5P1(lines)
+	result, err := solutionD5P2(lines)
 	if err != nil {
 		panic(err)
 	}
