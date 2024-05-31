@@ -272,3 +272,111 @@ func solutionD5P2(lines []string) (int32, error) {
 	}
 	return niceStrings, nil
 }
+
+func solutionD6P1(lines []string) (int32, error) {
+	grid := [1000][1000]bool{}
+	for _, line := range lines {
+		words := strings.Fields(line)
+		command := words[0]
+		coordinates := [4]int32{}
+		startStrs := []string{}
+		endStrs := []string{}
+		if command == "toggle" {
+			startStrs = strings.Split(words[1], ",")
+			endStrs = strings.Split(words[3], ",")
+		} else {
+			command = strings.Join(words[:2], " ")
+			startStrs = strings.Split(words[2], ",")
+			endStrs = strings.Split(words[4], ",")
+		}
+		strCoordinates := append(startStrs, endStrs...)
+		for idx, str := range strCoordinates {
+			v, err := strconv.ParseInt(str, 10, 32)
+			if err != nil {
+				return 0, err
+			}
+			coordinates[idx] = int32(v)
+		}
+
+		// ejecutar comandos
+		for i := coordinates[0]; i <= coordinates[2]; i++ {
+			for j := coordinates[1]; j <= coordinates[3]; j++ {
+				switch command {
+				case "toggle":
+					grid[i][j] = !grid[i][j]
+				case "turn on":
+					grid[i][j] = true
+				case "turn off":
+					grid[i][j] = false
+				}
+
+			}
+		}
+
+	}
+
+	littedLights := 0
+	for i := 0; i < 1000; i++ {
+		for j := 0; j < 1000; j++ {
+			if grid[i][j] {
+				littedLights++
+			}
+		}
+	}
+
+	return int32(littedLights), nil
+}
+
+func solutionD6P2(lines []string) (int32, error) {
+	grid := [1000][1000]int32{}
+	for _, line := range lines {
+		words := strings.Fields(line)
+		command := words[0]
+		coordinates := [4]int32{}
+		startStrs := []string{}
+		endStrs := []string{}
+		if command == "toggle" {
+			startStrs = strings.Split(words[1], ",")
+			endStrs = strings.Split(words[3], ",")
+		} else {
+			command = strings.Join(words[:2], " ")
+			startStrs = strings.Split(words[2], ",")
+			endStrs = strings.Split(words[4], ",")
+		}
+		strCoordinates := append(startStrs, endStrs...)
+		for idx, str := range strCoordinates {
+			v, err := strconv.ParseInt(str, 10, 32)
+			if err != nil {
+				return 0, err
+			}
+			coordinates[idx] = int32(v)
+		}
+
+		// ejecutar comandos
+		for i := coordinates[0]; i <= coordinates[2]; i++ {
+			for j := coordinates[1]; j <= coordinates[3]; j++ {
+				switch command {
+				case "toggle":
+					grid[i][j] += 2
+				case "turn on":
+					grid[i][j] += 1
+				case "turn off":
+					if grid[i][j] > 0 {
+						grid[i][j] -= 1
+					}
+				}
+
+			}
+		}
+
+	}
+
+	totalBrightness := 0
+	for i := 0; i < 1000; i++ {
+		for j := 0; j < 1000; j++ {
+			totalBrightness += int(grid[i][j])
+		}
+	}
+
+	return int32(totalBrightness), nil
+}
