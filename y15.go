@@ -515,3 +515,115 @@ func solutionD7P1(lines []string) (int32, error) {
 
 	return int32(wireValues["a"]), nil
 }
+
+func solutionD7P2(lines []string) (int32, error) {
+	const previousResponse = 16076
+
+	type record = struct {
+		words     []string
+		processed bool
+	}
+	tracking := []*record{}
+	wireValues := map[string]uint16{}
+	processedCounter := 0
+
+	// cargamos instrucciones
+	for _, line := range lines {
+		tracking = append(tracking, &record{words: strings.Fields(line)})
+	}
+
+	// definimos valores de wires
+	for _, r := range tracking {
+		if len(r.words) == 3 {
+			v, err := strconv.ParseInt(r.words[0], 10, 16)
+			if err != nil {
+				if errors.Is(err, strconv.ErrSyntax) {
+					continue
+				} else {
+					return 0, err
+				}
+			}
+			wireName := r.words[len(r.words)-1]
+			if wireName == "b" {
+				wireValues[wireName] = uint16(previousResponse)
+			} else {
+				wireValues[wireName] = uint16(v)
+			}
+			r.processed = true
+			processedCounter += 1
+		}
+
+	}
+
+	for processedCounter != len(tracking) {
+
+		// recorremos el tracking hasta que todo este procesado
+		for _, r := range tracking {
+			if r.processed {
+				continue
+			}
+			// set arguments
+			operation := r.words[:len(r.words)-2]
+			var operator string
+			var operants []string
+			resultDestiny := r.words[len(r.words)-1]
+
+			if len(operation) == 1 {
+				// ASSIGN
+				v, ok := wireValues[operation[0]]
+				if !ok {
+					continue
+				}
+				wireValues[resultDestiny] = v
+			} else if len(operation) == 2 {
+				// NOT
+				v, ok := wireValues[operation[1]]
+				if !ok {
+					continue
+				}
+				wireValues[resultDestiny] = ^v
+			} else {
+				operator = operation[1]
+				operants = []string{operation[0], operation[2]}
+
+				var leftOp uint16
+				leftOp, ok := wireValues[operants[0]]
+				if !ok {
+					v, err := strconv.ParseInt(operants[0], 10, 16)
+					if err != nil {
+						continue
+					}
+					leftOp = uint16(v)
+				}
+
+				var rightOp uint16
+				rightOp, ok = wireValues[operants[1]]
+				if !ok {
+					v, err := strconv.ParseInt(operants[1], 10, 16)
+					if err != nil {
+						continue
+					}
+					rightOp = uint16(v)
+				}
+
+				switch operator {
+				case "AND":
+					wireValues[resultDestiny] = leftOp & rightOp
+				case "OR":
+					wireValues[resultDestiny] = leftOp | rightOp
+				case "RSHIFT":
+					wireValues[resultDestiny] = leftOp >> rightOp
+				case "LSHIFT":
+					wireValues[resultDestiny] = leftOp << rightOp
+				}
+
+			}
+
+			r.processed = true
+			processedCounter += 1
+
+		}
+	}
+
+	return int32(wireValues["a"]), nil
+}
