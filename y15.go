@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -189,11 +192,37 @@ func solutionD3P2(lines []string) (int32, error) {
 }
 
 func solutionD4P1(lines []string) (int32, error) {
-	return 0, nil
+	secret := lines[0]
+	result := 0
+
+	for result < math.MaxInt32 {
+		hashInput := secret + strconv.Itoa(result)
+		hash := md5.Sum([]byte(hashInput))
+		str := hex.EncodeToString(hash[:])
+		if str[:5] == "00000" {
+			break
+		}
+		result += 1
+	}
+
+	return int32(result), nil
 }
 
 func solutionD4P2(lines []string) (int32, error) {
-	return 0, nil
+	secret := lines[0]
+	result := 0
+
+	for result < math.MaxInt32 {
+		hashInput := secret + strconv.Itoa(result)
+		hash := md5.Sum([]byte(hashInput))
+		str := hex.EncodeToString(hash[:])
+		if str[:6] == "000000" {
+			break
+		}
+		result += 1
+	}
+
+	return int32(result), nil
 }
 
 func solutionD5P1(lines []string) (int32, error) {

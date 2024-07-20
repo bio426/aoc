@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("inputs/07.txt")
+	file, err := os.Open("inputs/04.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 
-	result, err := solutionD7P1(lines)
+	result, err := solutionD4P2(lines)
 	if err != nil {
 		panic(err)
 	}
