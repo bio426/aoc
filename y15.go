@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	// "fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -626,4 +627,64 @@ func solutionD7P2(lines []string) (int32, error) {
 	}
 
 	return int32(wireValues["a"]), nil
+}
+
+func solutionD8P1(lines []string) (int32, error) {
+	memoryChar := 0
+	stringChar := 0
+
+	for _, line := range lines {
+		lineMemory := 0
+
+		for idx := 0; idx < len(line); idx++ {
+			if idx == 0 || idx == len(line)-1 {
+				continue
+			}
+
+			if line[idx] == '\\' {
+				switch line[idx+1] {
+				case '\\', '"':
+					idx += 1
+				case 'x':
+					idx += 3
+				}
+			}
+			lineMemory += 1
+		}
+
+		stringChar += len(line)
+		memoryChar += lineMemory
+	}
+
+	return int32(stringChar - memoryChar), nil
+}
+
+func solutionD8P2(lines []string) (int32, error) {
+	memoryChar := 0
+	stringChar := 0
+
+	for _, line := range lines {
+		lineMemory := 0
+
+		for idx := 0; idx < len(line); idx++ {
+			if idx == 0 || idx == len(line)-1 {
+				continue
+			}
+
+			if line[idx] == '\\' {
+				switch line[idx+1] {
+				case '\\', '"':
+					idx += 1
+				case 'x':
+					idx += 3
+				}
+			}
+			lineMemory += 1
+		}
+
+		stringChar += len(line)
+		memoryChar += lineMemory
+	}
+
+	return int32(stringChar - memoryChar), nil
 }
