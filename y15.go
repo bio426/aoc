@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	// "fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -660,31 +659,30 @@ func solutionD8P1(lines []string) (int32, error) {
 }
 
 func solutionD8P2(lines []string) (int32, error) {
-	memoryChar := 0
-	stringChar := 0
+	originalChars := 0
+	encodedChars := 0
 
 	for _, line := range lines {
-		lineMemory := 0
+		encoded := ""
 
+		encoded += `"`
 		for idx := 0; idx < len(line); idx++ {
-			if idx == 0 || idx == len(line)-1 {
-				continue
-			}
-
-			if line[idx] == '\\' {
-				switch line[idx+1] {
-				case '\\', '"':
-					idx += 1
-				case 'x':
-					idx += 3
+			if line[idx] == '\\' || line[idx] == '"' {
+				switch line[idx] {
+				case '\\':
+					encoded += `\\`
+				case '"':
+					encoded += `\"`
 				}
+			} else {
+				encoded += string(line[idx])
 			}
-			lineMemory += 1
 		}
+		encoded += `"`
 
-		stringChar += len(line)
-		memoryChar += lineMemory
+		originalChars += len(line)
+		encodedChars += len(encoded)
 	}
 
-	return int32(stringChar - memoryChar), nil
+	return int32(encodedChars - originalChars), nil
 }
