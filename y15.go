@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -685,4 +686,85 @@ func solutionD8P2(lines []string) (int32, error) {
 	}
 
 	return int32(encodedChars - originalChars), nil
+}
+
+func solutionD9P1(lines []string) (int32, error) {
+	_ = lines
+	dummy := `London to Dublin = 464
+London to Belfast = 518
+Dublin to Belfast = 141`
+	dummyLines := strings.Split(dummy, "\n")
+	type distance = struct {
+		start  string
+		end    string
+		amount int32
+	}
+	distances := []distance{}
+
+	// for _, line := range lines {
+	for _, line := range dummyLines {
+		words := strings.Fields(line)
+		num, err := strconv.ParseInt(words[4], 10, 32)
+		if err != nil {
+			return 0, err
+		}
+		distances = append(distances, distance{start: words[0], end: words[2], amount: int32(num)})
+		fmt.Println(words)
+
+	}
+
+	return 0, nil
+}
+
+func solutionD9P2(lines []string) (int32, error) {
+
+	return 0, nil
+}
+
+func solutionD10P1(lines []string) (int32, error) {
+	input := lines[0]
+	input = input + " "
+
+	for i := 0; i < 40; i++ {
+		count := 0
+		previous := input[0]
+		result := ""
+
+		for _, char := range input {
+			if char != rune(previous) {
+				result = result + strconv.Itoa(count) + string(previous)
+				// clean
+				previous = byte(char)
+				count = 0
+			}
+			count += 1
+		}
+		input = result + " "
+	}
+
+	return int32(len(input) - 1), nil
+}
+
+func solutionD10P2(lines []string) (int32, error) {
+	input := lines[0]
+	input = input + " "
+
+	for i := 0; i < 50; i++ {
+		count := 0
+		previous := input[0]
+		result := ""
+
+		for _, char := range input {
+			if char != rune(previous) {
+				result = result + strconv.Itoa(count) + string(previous)
+				// clean
+				previous = byte(char)
+				count = 0
+			}
+			count += 1
+		}
+		input = result + " "
+	}
+
+	return int32(len(input) - 1), nil
 }
